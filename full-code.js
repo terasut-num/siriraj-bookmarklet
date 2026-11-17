@@ -7,6 +7,10 @@
  * then press Enter.
  *
  * What it does:
+ *   0. On an UpToDate page (uptodate.com): asks you to confirm you are on
+ *      the Siriraj Intranet, opens the Siriraj Medical Library UpToDate
+ *      sign-in page for 3 seconds, closes it and reloads the UpToDate page.
+ *      Steps 1–5 are skipped.
  *   1. Scans the current page for a DOI, PMID or ISBN-13.
  *   2. For an article (DOI):
  *        - offers the open-access full text via Unpaywall, if one exists;
@@ -115,6 +119,31 @@
   var EZPROXY = "https://ejournal.mahidol.ac.th/login?url=";
   /** Contact e-mail sent to the Unpaywall API (required by their terms). */
   var UNPAYWALL_EMAIL = "unpaywall_01@example.com";
+  /** Siriraj Medical Library page that signs the Intranet in to UpToDate. */
+  var UPTODATE_LOGIN = "https://medlib.si.mahidol.ac.th/goto_UpToDate.php";
+  /** How long to leave the sign-in tab open before reloading (milliseconds). */
+  var UPTODATE_WAIT_MS = 3000;
+
+  // ---------------------------------------------------------------------------
+  // UpToDate: sign in via the Siriraj Intranet, then reload the page
+  // ---------------------------------------------------------------------------
+
+  if (isAllowedHost(window.location.hostname, ["uptodate.com"])) {
+    var upToDateUrl = window.location.href;
+    if (
+      confirm(
+        "Please make sure you are connected to the Siriraj Intranet.\n" +
+          "(Click OK to continue, or Cancel to abort)"
+      )
+    ) {
+      var loginTab = window.open(UPTODATE_LOGIN, "_blank");
+      setTimeout(function () {
+        if (loginTab) loginTab.close();
+        window.location.href = upToDateUrl;
+      }, UPTODATE_WAIT_MS);
+    }
+    return; // UpToDate pages skip the DOI / ISBN search below.
+  }
 
   // ---------------------------------------------------------------------------
   // State
