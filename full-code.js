@@ -409,17 +409,22 @@
     }
     var issn = msg.ISSN != null ? msg.ISSN[0] : msg.ISSN;
 
+    // URL-encode every value so titles containing "&", "#", "?" etc. survive.
+    var param = function (value) {
+      return encodeURIComponent(value == null ? "" : value);
+    };
+
     window.open(
       BASE_SFX + "/sfx_local?sid=sfx:citation&genre=article" +
-        "&atitle=" + articleTitle +
-        "&jtitle=" + journalTitle +
-        "&issn=" + issn +
-        "&volume=" + volume +
-        "&year=" + year +
-        "&issue=" + issue +
-        "&spage=" + startPage +
-        "&epage=" + endPage +
-        "&doi=" + msg.DOI
+        "&atitle=" + param(articleTitle) +
+        "&jtitle=" + param(journalTitle) +
+        "&issn=" + param(issn) +
+        "&volume=" + param(volume) +
+        "&year=" + param(year) +
+        "&issue=" + param(issue) +
+        "&spage=" + param(startPage) +
+        "&epage=" + param(endPage) +
+        "&doi=" + param(msg.DOI)
     );
   }
 
@@ -474,18 +479,18 @@
   // Main
   // ---------------------------------------------------------------------------
 
+  /** Returns the trimmed `content` of <meta name="…"> (case-insensitive), or null. */
+  function metaContent(name) {
+    var el = document.querySelector('meta[name="' + name + '" i]');
+    var value = el && el.getAttribute("content");
+    return value ? value.trim() : null;
+  }
+
   async function mainProcess() {
     allDoi = doiOrgMatches !== null ? doiMatches.concat(doiOrgMatches) : doiMatches;
 
-    // DOI or PMID from <meta> tags (uses the page's jQuery when available).
-    var metaId;
-    try {
-      metaId =
-        $("meta[name=citation_doi]").attr("content") ||
-        $("meta[name=citation_pmid]").attr("content");
-    } catch (err) {
-      metaId = undefined;
-    }
+    // DOI or PMID from the page's citation <meta> tags.
+    var metaId = metaContent("citation_doi") || metaContent("citation_pmid") || undefined;
 
     // SAGE journals keep the DOI in <meta name="dc.Identifier">.
     if (currentHostname == "journals.sagepub.com") {
@@ -541,6 +546,9 @@
 
     if (doi != null) {
       await searchArticle(doi, UNPAYWALL_EMAIL, allowedList, EZPROXY, userCheck);
+    } else if (userCheck === true) {
+      // The user already accepted EZproxy above and the page was reopened;
+      // don't open it a second time.
     } else if (
       isAllowedHost(window.location.hostname, allowedList) &&
       userCheck !== false &&
