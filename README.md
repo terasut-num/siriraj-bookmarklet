@@ -13,6 +13,16 @@ Click it on a journal article, a PubMed record, or a book page. It finds the **D
 
 If the page has more than one DOI or ISBN, the tool asks you which one to use.
 
+### On UpToDate pages
+
+On **UpToDate** (`uptodate.com`), the tool does something different. It signs you in to UpToDate through the Siriraj Medical Library instead of searching for a DOI or ISBN:
+
+1. It asks you to confirm that you are connected to the **Siriraj Intranet**. Click **Cancel** to stop.
+2. It opens the Siriraj Medical Library UpToDate sign-in page in a new tab.
+3. After 3 seconds, it closes that tab and reloads your UpToDate page, now signed in.
+
+You must be connected to the Siriraj Intranet for this to work.
+
 > **Note:** Some links lead to subscribed content. You may need to sign in with your Mahidol University account.
 
 ---
@@ -52,7 +62,7 @@ Set this up once. After that, it takes one click.
 
 ### Step 3: Use it
 
-1. Open an article, a PubMed record, or a book page.
+1. Open an article, a PubMed record, a book page, or an UpToDate page.
 2. Click the **Siriraj** bookmark on your bookmarks bar.
 3. Answer any questions that pop up. The result opens in a new tab.
 
